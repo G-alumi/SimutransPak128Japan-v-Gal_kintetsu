@@ -6,48 +6,44 @@ on:
       - release
     types:
       - opened
+
+permissions:
+  pull-requests: write
+  contents: write
+
 env:
-  ZIP_FILE: gal_hankyu.zip
+  ZIP_FILE: gal_kintetsu.zip
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PR_URL:   ${{ github.event.pull_request.html_url }}
+  TAG:      ${{ github.event.pull_request.title }}
+  NOTES:    ${{ github.event.pull_request.body }}
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
-      - name: Install packages
-        run: |
-          sudo apt update
-          sudo apt install -y simutrans-makeobj
-
       - name: Checkout
-        uses: actions/checkout@master
-      
-      - name: Make Release Directory
-        run: mkdir -p ./release
-        
-      - name: Run Makeobj
-        run: |
-          cd ./vehicle
-          for dir in `find * -maxdepth 0 -type d`; do
-            if [ $dir = "7200" ]; then
-              makeobj pak128 ../release/vehicle.Gal_nose$dir.pak ./$dir/*.dat
-            else
-              makeobj pak128 ../release/vehicle.Gal_hankyu$dir.pak ./$dir/*.dat
-            fi
-          done 
-
-      - name: Archive Release
-        run: |
-          if [ -d ./compat_archive/${{ github.ref_name }} ]; then
-            cp ./compat_archive/${{ github.ref_name }}/* ./release
-            fi
-          zip -r -j ${{ env.ZIP_FILE }} ./release
-        
-      - name: Upload Release
-        uses: ncipollo/release-action@v1
+        uses: actions/checkout@v4
         with:
-          artifacts: "${{ env.ZIP_FILE }}"
-          bodyFile: "release.md"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: test
+        run: echo test
+        
+      - name: Approve and merge PR
+        run:  |
+          gh pr review ${{ env.PR_URL }} --approve
+          gh pr merge ${{ env.PR_URL }} --merge
+        
+      - name: Write update in readme.md
+        run:  | 
+          sed -i -e 's/<!-- updateHistory -->/<!-- updateHistory -->\n###${{ env.TAG }}\n${{ env.NOTES }}/' readme.md
+    
+      - name: Commit readme.md
+        run:  |
+          git config user.name  "actions-user"
+          git config user.email "65916846+actions-user@users.noreply.github.com"
+          git add .
+          git commit -m "${{ env.TAG }}のreadme.mdを作成"
+          git push

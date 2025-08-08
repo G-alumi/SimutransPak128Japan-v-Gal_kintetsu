@@ -1,0 +1,45 @@
+name: release
+
+on:
+  pull_request:
+    branches: 
+      - release
+    types:
+      - opened
+
+permissions:
+  pull-requests: write
+  contents: write
+
+env:
+  ZIP_FILE: gal_kintetsu.zip
+  PR_URL:   ${{ github.event.pull_request.html_url }}
+  TAG:      ${{ github.event.pull_request.title }}
+  NOTES:    ${{ github.event.pull_request.body }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Approve and merge PR
+        run:  |
+          gh pr ${{ env.PR_URL }} --approve
+          gh pr merge ${{ env.PR_URL }} --merge
+        
+      - name: Write update in readme.md
+        run:  | 
+          sed -i -e 's/<!-- updateHistory -->/<!-- updateHistory -->\n###${{ env.TAG }}\n${{ env.NOTES }}/' readme.md
+    
+      - name: Commit readme.md
+        run:  |
+          git config user.name  "actions-user"
+          git config user.email "65916846+actions-user@users.noreply.github.com"
+          git add .
+          git commit -m "${{ env.TAG }}のreadme.mdを作成"
+          git push

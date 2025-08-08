@@ -13,6 +13,7 @@ permissions:
 
 env:
   ZIP_FILE: gal_kintetsu.zip
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   PR_URL:   ${{ github.event.pull_request.html_url }}
   TAG:      ${{ github.event.pull_request.title }}
   NOTES:    ${{ github.event.pull_request.body }}

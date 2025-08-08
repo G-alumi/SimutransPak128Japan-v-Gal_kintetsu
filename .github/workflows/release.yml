@@ -27,6 +27,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: test
+        run: echo test
+        
       - name: Approve and merge PR
         run:  |
           gh pr review ${{ env.PR_URL }} --approve

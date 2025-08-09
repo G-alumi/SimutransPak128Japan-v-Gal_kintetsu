@@ -25,10 +25,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Git setup and checkout
+        run: |
+          git config user.name  "actions-user"
+          git config user.email "65916846+actions-user@users.noreply.github.com"
+          git checkout release
       
       - name: Create work directory
         run: |
@@ -50,7 +51,7 @@ jobs:
           git config user.email "65916846+actions-user@users.noreply.github.com"
           git add -u
           git commit -m "${{ env.TAG }}のreadme.mdを作成"
-          git push origin HEAD:release
+          git push 
 
       - name: Merge into dev and main branches
         run: |

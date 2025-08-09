@@ -53,9 +53,10 @@ jobs:
         run: |
           git config user.name  "actions-user"
           git config user.email "65916846+actions-user@users.noreply.github.com"
+          git pull origin release --rebase
           git add -u
           git commit -m "${{ env.TAG }}のreadme.mdを作成"
-          git push 
+          git push origin HEAD:release
 
       - name: Merge into dev and main branches
         run: |

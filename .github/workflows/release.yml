@@ -25,7 +25,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Git setup and checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Git setup
         run: |
           git config user.name  "actions-user"
           git config user.email "65916846+actions-user@users.noreply.github.com"

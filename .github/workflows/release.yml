@@ -42,7 +42,7 @@ jobs:
       - name: Approve and merge PR
         run: |
           gh pr review ${{ env.PR_URL }} --approve
-          gh pr merge ${{ env.PR_URL }} --merge --auto
+          gh pr merge ${{ env.PR_URL }} --merge
         
       - name: Write update in readme.md
         run: | 

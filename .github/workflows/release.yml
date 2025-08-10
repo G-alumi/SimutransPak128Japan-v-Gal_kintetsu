@@ -68,8 +68,8 @@ jobs:
       - name: Merge into dev branche
         run: |
           git merge origin/release -m ${{ env.TAG }}の取り込み
-          git pull origin dev --rebase
-          git push origin HEAD:dev
+          git pull origin dev
+          git push
 
       - name: Checkout main branche
         uses: actions/checkout@v4
@@ -81,8 +81,8 @@ jobs:
         run: |
           git merge origin/release -m ${{ env.TAG }}の取り込み
           git tag ${{ env.TAG }}
-          git pull origin main --rebase
-          git push origin HEAD:main
+          git pull origin main
+          git push
       
       - name: Make Release Directory
         run: mkdir -p ${{ env.RELEASE_DIR }}

@@ -12,37 +12,97 @@ permissions:
   contents: write
 
 env:
-  ZIP_FILE: gal_kintetsu.zip
-  PR_URL:   ${{ github.event.pull_request.html_url }}
-  TAG:      ${{ github.event.pull_request.title }}
-  NOTES:    ${{ github.event.pull_request.body }}
+  GH_TOKEN:     ${{ secrets.GITHUB_TOKEN }}
+  TAG:          ${{ github.event.pull_request.title }}
+  NOTES:        ${{ github.event.pull_request.body }}
+  PR_URL:       ${{ github.event.pull_request.html_url }}
+  WORK_DIR:     ./_WORK/
+  RELEASE_DIR:  ./release/
+  ZIP_FILE:   gal_kintetsu.zip
+  NOTE_FILE:  notes.txt
 
 jobs:
   release:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: release
 
-      - name: test
-        run: echo test
+      - name: Git setup
+        run: |
+          git config user.name  "actions-user"
+          git config user.email "65916846+actions-user@users.noreply.github.com"
+      
+      - name: Create work directory
+        run: |
+          mkdir -p ${{ env.WORK_DIR }}
         
       - name: Approve and merge PR
-        run:  |
+        run: |
           gh pr review ${{ env.PR_URL }} --approve
           gh pr merge ${{ env.PR_URL }} --merge
         
       - name: Write update in readme.md
-        run:  | 
-          sed -i -e 's/<!-- updateHistory -->/<!-- updateHistory -->\n###${{ env.TAG }}\n${{ env.NOTES }}/' readme.md
+        run: | 
+          printf "### ${{ env.TAG }}\n${{ env.NOTES }}\n" > ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}
+          sed -i -e '/<!-- updateHistory -->/r ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}' readme.md
     
       - name: Commit readme.md
-        run:  |
+        run: |
           git config user.name  "actions-user"
           git config user.email "65916846+actions-user@users.noreply.github.com"
-          git add .
+          git add -u
           git commit -m "${{ env.TAG }}のreadme.mdを作成"
-          git push
+          git pull origin release --rebase
+          git push origin HEAD:release
+
+      - name: Checkout dev branche
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+        
+      - name: Merge into dev branche
+        run: |
+          git merge origin/release -m ${{ env.TAG }}の取り込み
+          git pull origin dev --rebase
+          git push origin HEAD:dev
+
+      - name: Checkout main branche
+        uses: actions/checkout@v4
+        with:
+          ref: main
+        
+      - name: Merge into main branche
+        run: |
+          git merge origin/release -m ${{ env.TAG }}の取り込み
+          git tag ${{ env.TAG }}
+          git pull origin main --rebase
+          git push origin HEAD:main
+      
+      - name: Make Release Directory
+        run: mkdir -p ${{ env.RELEASE_DIR }}
+
+      - name: Install packages
+        run: |
+          sudo apt update
+          sudo apt install -y simutrans-makeobj
+      
+      - name: Run Makeobj
+        run: |
+          for type in */ ; do
+            for name_path in "$type"*/ ; do
+              name=$(basename "$name_path")
+              if ls "$name_path"*.dat 1> /dev/null 2>&1; then 
+                  makeobj pak128 ${{ env.RELEASE_DIR }}${type%/}.$name.pak $name_path*.dat
+              fi
+            done
+          done
+          
+      - name: Release
+        run: |
+          zip -r -j ${{ env.ZIP_FILE }} ${{ env.RELEASE_DIR }}
+          sed -i -e "a/\n詳しくは[Readme](readme.md)をご覧ください。\n" ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}
+          gh release create ${{ env.TAG }} ${{ env.ZIP_FILE }} -F ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}

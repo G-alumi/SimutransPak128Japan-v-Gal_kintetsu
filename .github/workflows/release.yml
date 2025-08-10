@@ -16,7 +16,7 @@ env:
   TAG:          ${{ github.event.pull_request.title }}
   NOTES:        ${{ github.event.pull_request.body }}
   PR_URL:       ${{ github.event.pull_request.html_url }}
-  WORK_DIR:     ./_WORK/
+  WORK_DIR:     ../_WORK/
   RELEASE_DIR:  ./release/
   ZIP_FILE:   gal_kintetsu.zip
   NOTE_FILE:  notes.txt

@@ -84,6 +84,7 @@ jobs:
           git tag ${{ env.TAG }}
           git pull origin main
           git push origin main
+          git push origin ${{ env.TAG }}
       
       - name: Make Release Directory
         run: mkdir -p ${{ env.RELEASE_DIR }}

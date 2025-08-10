@@ -63,6 +63,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: dev
+          fetch-depth: 0
         
       - name: Merge into dev branche
         run: |
@@ -74,6 +75,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
+          fetch-depth: 0
         
       - name: Merge into main branche
         run: |

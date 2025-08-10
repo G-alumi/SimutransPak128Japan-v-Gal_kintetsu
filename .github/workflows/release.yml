@@ -30,6 +30,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: release
+          fetch-depth: 0
 
       - name: Git setup
         run: |
@@ -47,7 +48,7 @@ jobs:
         
       - name: Write update in readme.md
         run: | 
-          printf "### ${{ env.TAG }}\n${{ env.NOTES }}\n" > ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}
+          printf "\n### ${{ env.TAG }}\n${{ env.NOTES }}\n" > ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}
           sed -i -e '/<!-- updateHistory -->/r ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}' readme.md
     
       - name: Commit readme.md

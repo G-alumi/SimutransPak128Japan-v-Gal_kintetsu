@@ -48,7 +48,7 @@ jobs:
         
       - name: Write update in readme.md
         run: | 
-          printf "\n### ${{ env.TAG }}\n${{ env.NOTES }}\n" > ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}
+          printf "### ${{ env.TAG }}\n${{ env.NOTES }}\n\n" > ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}
           sed -i -e '/<!-- updateHistory -->/r ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}' readme.md
     
       - name: Commit readme.md
@@ -108,5 +108,5 @@ jobs:
       - name: Release
         run: |
           zip -r -j ${{ env.ZIP_FILE }} ${{ env.RELEASE_DIR }}
-          sed -i -e "a/\n詳しくは[Readme](readme.md)をご覧ください。\n" ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}
+          sed -i -e "$a\\n詳しくは[Readme](readme.md)をご覧ください。" ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}
           gh release create ${{ env.TAG }} ${{ env.ZIP_FILE }} -F ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}

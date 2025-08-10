@@ -57,8 +57,8 @@ jobs:
           git config user.email "65916846+actions-user@users.noreply.github.com"
           git add -u
           git commit -m "${{ env.TAG }}のreadme.mdを作成"
-          git pull origin release
-          git push origin release
+          git pull origin release --rebase
+          git push origin HEAD:release
 
       - name: Checkout dev branche
         uses: actions/checkout@v4

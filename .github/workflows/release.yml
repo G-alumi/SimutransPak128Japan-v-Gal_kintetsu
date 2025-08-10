@@ -59,23 +59,25 @@ jobs:
           git pull origin release --rebase
           git push origin HEAD:release
 
-      - name: Checkout repository
+      - name: Checkout dev branche
         uses: actions/checkout@v4
         with:
           ref: dev
         
       - name: Merge into dev branche
         run: |
-          git merge release -m ${{ env.TAG }}の取り込み
+          git merge origin/release -m ${{ env.TAG }}の取り込み
+          git pull origin dev --rebase
+          git push origin HEAD:dev
 
-      - name: Checkout repository
+      - name: Checkout main branche
         uses: actions/checkout@v4
         with:
           ref: main
         
       - name: Merge into main branche
         run: |
-          git merge release -m ${{ env.TAG }}の取り込み
+          git merge origin/release -m ${{ env.TAG }}の取り込み
           git tag ${{ env.TAG }}
           git pull origin main --rebase
           git push origin HEAD:main

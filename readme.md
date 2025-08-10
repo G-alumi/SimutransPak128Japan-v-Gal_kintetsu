@@ -8,6 +8,11 @@
 ## 更新履歴
 <!-- updateHistory -->
 
+### v1.0.0
+新しめな通勤車を実装
+- 8A系・1A系を追加
+- 9820系・9020系・5820系・9230系を追加
+
 ## 個別解説
 ### 8A系・1A系
 ![](readme_src/icon_8A.png)![](readme_src/icon_1A.png)

@@ -1,3 +1,4 @@
 .vscode/
 AhozuraDatSupporterData/
 *.apd
+*.pyc

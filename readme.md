@@ -5,6 +5,9 @@
 
 8A系・1A系・9820系・9020系・5820系(50番台)・3220系のセットです。気が向いたら追加されます。
 
+## ダウンロード
+[アドオン・ソース](https://github.com/G-alumi/SimutransPak128Japan-v-Gal_kintetsu/releases)
+
 ## 更新履歴<!-- updateHistory -->
 ### v1.0.0
 新しめな通勤車を実装

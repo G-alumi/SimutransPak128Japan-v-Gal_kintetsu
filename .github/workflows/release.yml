@@ -14,6 +14,7 @@ env:
   WORK_DIR:     ../_WORK/
   RELEASE_DIR:  ./release/
   ZIP_FILE:   gal_kintetsu.zip
+  NOTE_FILE:  note.txt
 
 jobs:
   release:
@@ -38,6 +39,7 @@ jobs:
       - name: Registring env
         run: |
           echo "TAG=$(cat ./repo.json | jq -r .updates[0].tag)" >> $GITHUB_ENV
+          echo "TAG=$(cat ./repo.json | jq -r .updates[0].description)" > ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}
 
       - name: Setup Python
         uses: actions/setup-python@v1
@@ -111,4 +113,4 @@ jobs:
         run: |
           zip -r -j ${{ env.ZIP_FILE }} ${{ env.RELEASE_DIR }}
           sed -i -e "a/\n詳しくは[Readme](readme.md)をご覧ください。\n" ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}
-          gh release create ${{ env.TAG }} ${{ env.ZIP_FILE }} -n $(cat ${{ env.WORK_DIR }}${{ env.WORK_DIR }}${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}.json | jq -r .updates[0].description)
+          gh release create ${{ env.TAG }} ${{ env.ZIP_FILE }} -F ${{ env.WORK_DIR }}${{ env.NOTE_FILE }}
